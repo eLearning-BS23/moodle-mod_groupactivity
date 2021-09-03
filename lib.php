@@ -25,6 +25,30 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+
+/** GROUPACTIVITY_MAX_NAME_LENGTH = 50 */
+define("GROUPACTIVITY_MAX_NAME_LENGTH", 50);
+
+/**
+ * @uses GROUPACTIVITY_MAX_NAME_LENGTH
+ * @param object $groupactivity
+ * @return string
+ */
+function get_groupactivity_name($groupactivity) {
+    $name = strip_tags(format_string($groupactivity->intro,true));
+    if (core_text::strlen($name) > GROUPACTIVITY_MAX_NAME_LENGTH) {
+        $name = core_text::substr($name, 0, GROUPACTIVITY_MAX_NAME_LENGTH)."...";
+    }
+
+    if (empty($name)) {
+        // arbitrary name
+        $name = get_string('modulename','groupactivity');
+    }
+
+    return $name;
+}
+
+
 /**
  * Given an object containing all the necessary data,
  * (defined by the form in mod_form.php) this function
@@ -36,17 +60,17 @@ defined('MOODLE_INTERNAL') || die;
  * @return bool|int
  */
 function groupactivity_add_instance(object $groupactivity) {
-//    global $DB;
-//
-//    $label->name = get_label_name($label);
-//    $label->timemodified = time();
-//
-//    $id = $DB->insert_record("label", $label);
-//
-//    $completiontimeexpected = !empty($label->completionexpected) ? $label->completionexpected : null;
-//    \core_completion\api::update_completion_date_event($label->coursemodule, 'label', $id, $completiontimeexpected);
+    global $DB;
 
-//    return $id;
+    $groupactivity->name = get_groupactivity_name($groupactivity);
+    $groupactivity->timemodified = time();
+
+    $id = $DB->insert_record("groupactivity", $groupactivity);
+
+    $completiontimeexpected = !empty($groupactivity->completionexpected) ? $groupactivity->completionexpected : null;
+    \core_completion\api::update_completion_date_event($groupactivity->coursemodule, 'groupactivity', $id, $completiontimeexpected);
+
+    return $id;
 }
 
 /**
