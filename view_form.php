@@ -16,41 +16,49 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Add groupactivity form
+ * Lesson page without answers/ groupactivity
  *
  * @package mod_groupactivity
  * @copyright  2021 Brain Station 23 LTD.
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ **/
+
+defined('MOODLE_INTERNAL') || die();
+
+/**
+ * Include formslib if it has not already been included
  */
 
-defined('MOODLE_INTERNAL') || die('Direct access to this script is forbidden.');
+require_once($CFG->libdir.'/formslib.php');
 
-require_once ($CFG->dirroot.'/course/moodleform_mod.php');
-require_once($CFG->dirroot.'/mod/groupactivity/lib.php');
+/**
+ * view form
+ *
+ * @copyright  2009 Sam Hemelryk
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ **/
+class groupactivity_view_form extends moodleform {
 
-class mod_groupactivity_mod_form extends moodleform_mod {
+    public function definition() {
+        global $CFG;
 
-    function definition() {
-        global $CFG, $DB, $OUTPUT, $PAGE, $COURSE;
+        $mform = $this->_form; // Don't forget the underscore!
 
-        $PAGE->force_settings_menu();
-
-        $mform = $this->_form;
-
-        $mform->addElement('header', 'generalhdr', get_string('general'));
-        $this->standard_intro_elements(get_string('groupactivitytext', 'groupactivity'));
-
+        $availabletypes = get_module_types_names();
+        foreach ($availabletypes as $module => $name) {
+            if (plugin_supports('mod', $module, FEATURE_NO_VIEW_LINK, false)) {
+                unset($availabletypes[$module]);
+            }
+        }
         $select = $mform->addElement('select', 'gact', get_string('activityselector', 'groupactivity'), groupactivity_list());
         $select->setMultiple(true);
-
-        // Label does not add "Show description" checkbox meaning that 'intro' is always shown on the course page.
-        $mform->addElement('hidden', 'showdescription', 1);
-        $mform->setType('showdescription', PARAM_INT);
 
         $this->standard_coursemodule_elements();
 
         $this->add_action_buttons();
-
     }
-
+    //Custom validation should be added here
+    function validation($data, $files) {
+        return array();
+    }
 }

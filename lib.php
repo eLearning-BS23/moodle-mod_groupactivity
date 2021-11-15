@@ -123,3 +123,42 @@ function groupactivity_delete_instance($id) {
 //    return $result;
 }
 
+/**
+ * Find the active activity list from moodle mod.
+ *
+ * @param null
+ * @return array
+ */
+function groupactivity_list() {
+    $availabletypes = get_module_types_names();
+    foreach ($availabletypes as $module => $name) {
+        if (plugin_supports('mod', $module, FEATURE_NO_VIEW_LINK, false)) {
+            unset($availabletypes[$module]);
+        }
+    }
+    return $availabletypes;
+}
+
+
+
+////include groupactivity_view_form.php
+//require_once(__DIR__ .'/groupactivity_view_form.php');
+//
+////Instantiate simplehtml_form
+//$mform = new groupactivity_view_form();
+//
+////Form processing and displaying is done here
+//if ($mform->is_cancelled()) {
+//    //Handle form cancel operation, if cancel button is present on form
+//} else if ($fromform = $mform->get_data()) {
+//    //In this case you process validated data. $mform->get_data() returns data posted in form.
+//} else {
+//    // this branch is executed if the form is submitted but the data doesn't validate and the form should be redisplayed
+//    // or on the first display of the form.
+//
+//    //Set default data (if any)
+////    $mform->set_data($toform);
+//    //displays the form
+//    $mform->display();
+//}
+//
